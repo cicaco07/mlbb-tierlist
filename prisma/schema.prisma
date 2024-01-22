@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+}
+
+model Hero {
+  id              Int             @id @default(autoincrement())
+  name            String          @db.VarChar(100)
+  role            String          @db.VarChar(100)      
+  primary_type    String          @db.VarChar(100)
+  secondary_type  String          @db.VarChar(100)
+  image           String
+  base_stats      HeroBaseStats?
+  skills          Skill[]
+
+  @@map("heroes")
+}
+
+model HeroBaseStats {
+  id                  Int           @id @default(autoincrement())
+  base_hp             Int
+  base_mana           Int
+  base_hp_regen       String
+  base_mana_regen     String
+  physical_attack     Int
+  magic_power         String
+  pyhiscal_defense    String
+  magic_defense       String
+  attack_speed        String
+  movement_speed      Int
+  rasio_attack_speed  String
+  
+  hero                Hero          @relation(fields: [hero_id], references: [id])
+  hero_id             Int           @unique
+
+  @@map("base_stats")
+}
+
+model Skill {
+  id                    Int         @id @default(autoincrement())
+  hero                  Hero        @relation(fields: [hero_id], references: [id])
+  skill_number          Int
+  name                  String      @db.VarChar(100)
+  type                  String      @db.VarChar(100)
+  description           String    
+  active_description    String    
+  passive_description   String    
+
+  hero_id               Int
+  skills_detail         SkillDetail[]
+
+  @@map("skills")
+  @@index([hero_id])
+}
+
+model SkillDetail {
+  id                Int       @id @default(autoincrement())
+  skill             Skill     @relation(fields: [skills_id], references: [id])
+  level             String       
+  mana_cost         String
+  energy_cost       String
+  spell_vamp_ratio  String
+  hp_regen          String
+  base_damage       String
+  minimum_damage    String
+  passive_damage    String
+  cooldown          Decimal
+
+  skills_id         Int       
+
+  @@map("skillsdetail")
+  @@index([skills_id])
+}
+
+// model PatchNote {
+//   id        Int       @id @default(autoincrement())
+//   patch     String    
+//   created_at DateTime @default(now())
+//   updtaed_at DateTime @updatedAt
+
+//   @@map("patchnote")
+// }
